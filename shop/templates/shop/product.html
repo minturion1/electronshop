@@ -1,0 +1,183 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="way">
+  {% if product.subcategory %}<a href="{% url 'home' %}" class="way__link">Home</a><span class="way__line">/</span><a href="{% url 'categories' %}" class="way__link">Categories</a><span class="way__line">/</span><a href="{% url 'subcategories' cat_slug=subcategory.category.slug %}" class="way__link">{{ subcategory.category.title|truncatechars:20 }}</a><span class="way__line">/</span><a href="{% url 'products' cat_slug=product.subcategory.category.slug subcat_slug=product.subcategory.slug %}" class="way__link">{{ product.subcategory.title|truncatechars:15 }}</a><span class="way__line">/</span><div class="way__checked">{{ product.name|truncatechars:20 }}</div>{% else %}{% endif %}
+  
+</div>
+<div class="way__link mobile-back" style="cursor: pointer;"><i class="fa-solid fa-angle-left"></i> Back</div>
+    <div class="product">
+        <div class="product__content">
+            <div class="product__image-container">
+                <img src="{{ product.img.url }}" class="product__image"></img>
+                
+            </div>
+            
+            <div class="product__about">
+              {% if product.discount %}<div class="discount-badge">-{{ product.discount }}%</div>{% endif %}
+                <div class="product__section">{{product.name}}</div>
+                <div class="product__count">{% if product.count > 0 %}<i class="fa-regular fa-circle-check"></i> Available{% else %}<i class="fa-regular fa-circle-xmark"></i> Not available{% endif %}</div>
+                
+                <div class="switch-container">
+                  <input class="currency-choice" type="radio" value="1" id="points" name="currency" checked>
+                  <label for="points" class="switch-btn">$</label>
+                  {% if category %}
+                  <input class="currency-choice" type="radio" value="2" id="currency" name="currency">
+                  <label for="currency" class="switch-btn">Points <i class="fa-solid fa-coins"></i></label>
+                  {% else %}
+                  {% endif %}
+              </div>
+                <div class="product__buy">
+                    <div class="product__price">
+                      
+                      <span class="price__text">{% if product.discount %}{{ product.discount_price }}{% else %}{{ product.price }}{% endif %}<span style="color: #555; margin-left: 5px;">$</span></span>
+                      {% if product.discount %}<div class="overlined-price">{{ product.price }} $</div>{% endif %} 
+                      <span class="coins__price" style="display: none;">{{ product.get_points }} <i style="margin-left: 5px;" class="fa-solid fa-coins"></i></span>
+                    </div>
+                    {% if product.count == 0 %}
+                    {% else %}
+                    {% if request.user.is_authenticated %}
+                    <form id="buy-form" class="product__form">
+                        {% csrf_token %}
+                        <div class="quantity">
+                            <input name="count" id="count-input" type="number" min="0" max="{{product.count}}" step="1" value="0" readonly>
+                        </div>
+                        <button type="button" id="buy-button" class="cart-button">
+                          
+                          {% if product_id_str in cart.cart %}
+                          <span class="add-to-cart">Update cart</span>
+                          <span class="added">Updated</span>
+                          {% else %}
+                          <span class="add-to-cart">Add to cart</span>
+                          <span class="added">Added</span>
+                          {% endif %}
+                          <i class="fas fa-shopping-cart"></i>
+                          <i class="fas fa-box"></i>
+                        </button>
+                        
+                    </form>
+                    {% else %}
+                    <div style="display: block;" class="message">To place an order, log in to your profile. <a href="{% url 'login' %}" class="link">Login</a></div>
+                    {% endif %}
+                    
+                    
+                </div>
+                {% if chars %}
+                <div class="product__section2">Features</div>
+                <div class="product__characteristic-block">
+                  {% for char in chars %}
+                  <div class="product__characteristic">
+                    <div class="product__characteristic-name">{{ char.feature_name }}</div>
+                    <div class="product__characteristic-value">{{ char.feature_value }}</div>
+                  </div>
+                  {% endfor %}
+                  
+                </div>
+                {% endif %}
+                <div style="margin-top: 10px;" id="message" class="message"></div>
+                {% endif %}
+            </div>
+            
+            
+        </div>
+    </div>
+    <div id="loading-overlay">
+      <div id="loading-spinner"></div>
+  </div>
+<script>
+  
+  
+    $(document).ready(function(){
+      $(".mobile-back").click(function(e) {
+        e.preventDefault()
+        window.location.href = document.referrer;
+      })
+
+
+      $(".switch-container").click(function(e) {
+        var selectedOption = $('.currency-choice:checked').val();
+
+        if (selectedOption == '2') {
+          
+            $('.coins__price').css('display','flex')
+            $('.price__text').css('display','none')
+            $('.overlined-price').css('display','none')
+        }
+        if (selectedOption == '1') {
+          $('.coins__price').css('display','none')
+            $('.price__text').css('display','flex')
+            $('.overlined-price').css('display','block')
+        }
+
+    });
+        $("#buy-button").click(function(e){
+            e.preventDefault();
+            var count = $("#count-input").val();
+            count = parseInt(count, 10);
+            var selectedCurrency = $("input[name='currency']:checked").val();
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+            $("#loading-overlay").fadeIn();
+            var requestData = {
+                count: count,
+                currency: selectedCurrency,
+                csrfmiddlewaretoken: csrfToken
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/shop/add-to-cart-ajax/{{ product.id }}',
+                dataType: 'json',
+                data: requestData,
+                success: function(response){
+                    $("#loading-overlay").fadeOut();
+                    console.log(response);
+                    $('.cart-button').addClass('clicked');
+                    setTimeout(function() {
+                      $('.cart-button').removeClass('clicked')
+                    }, 2000);
+                },
+                error: function(error){
+                  $("#loading-overlay").fadeOut();
+                    console.log(error);
+                    $('#message').css('display', 'block')
+                    $('#message').text(JSON.parse(error.responseText).message).css('color','purple');
+                }
+            });
+        });
+    });
+
+    jQuery('<div class="quantity-nav"><div class="quantity-button quantity-up">+</div><div class="quantity-button quantity-down">-</div></div>').insertAfter('.quantity input');
+    jQuery('.quantity').each(function() {
+      var spinner = jQuery(this),
+        input = spinner.find('input[type="number"]'),
+        btnUp = spinner.find('.quantity-up'),
+        btnDown = spinner.find('.quantity-down'),
+        min = input.attr('min'),
+        max = input.attr('max');
+
+      btnUp.click(function() {
+        var oldValue = parseFloat(input.val());
+        if (oldValue >= max) {
+          var newVal = oldValue;
+        } else {
+          var newVal = oldValue + 1;
+        }
+        spinner.find("input").val(newVal);
+        spinner.find("input").trigger("change");
+      });
+
+      btnDown.click(function() {
+        var oldValue = parseFloat(input.val());
+        if (oldValue <= min) {
+          var newVal = oldValue;
+        } else {
+          var newVal = oldValue - 1;
+        }
+        spinner.find("input").val(newVal);
+        spinner.find("input").trigger("change");
+      });
+
+    });
+</script>
+{% endblock %}

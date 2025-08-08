@@ -1,0 +1,75 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block title %}Вхід{% endblock %}
+{% block content %}
+<form id="form">
+    {% csrf_token %}
+    {{ form.username.label }}
+    {{ form.username }}
+
+    
+
+    {{ form.password.label }}
+    <div class="input-container">
+        {{ form.password }}
+        <span class="icon"><i data-target="id_password" class="fa-regular fa-eye toggle-password"></i></span>
+    </div>
+
+    <div class="message"></div>
+    <div class="form__bottom">
+        <a class="register__button" href="{% url 'register' %}">Register</a>
+        <button type="submit" id="login-btn" class="button">Login</button>
+    </div>
+    <div id="loading-overlay">
+        <div id="loading-spinner"></div>
+    </div>
+    
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const targetId = button.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                } else {
+                    passwordInput.type = 'password';
+                }
+            });
+        });
+    });
+    
+    $(document).ready(function(){
+        $("#login-btn").click(function(e){
+            e.preventDefault();
+            $("#loading-overlay").fadeIn();
+            var formData = $("#form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: '/profile/login-ajax/',
+                dataType: 'json',
+                data: formData,
+                success: function(response){
+                    console.log(response);
+                    $('.message').css('display', 'block')
+                    $('.message').text(response.message).css('color','green')
+                    window.location.href = response.url
+                    $("#loading-overlay").fadeOut();
+                },
+                error: function(error){
+                    console.log(error);
+                    $('.message').css('display', 'block')
+                    $('.message').text(JSON.parse(error.responseText).message).css('color','purple');
+                    $("#loading-overlay").fadeOut();
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

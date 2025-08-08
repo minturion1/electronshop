@@ -1,0 +1,48 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Clear cart{% endblock %}
+{% block content %}
+<div class="cart-container">
+    <div class="cart-section">Cleaning the cart</div>
+    <div class="cart-par">All items in your cart will be cleared. Are you sure?</div>
+    <form id="clean-form" class="buttons">
+        {% csrf_token %}
+        <button class="button" id="cancel">Cancel</button>
+        <button class="button" id="confirm">Confirm</button>
+    </form>
+</div>
+<div id="loading-overlay">
+    <div id="loading-spinner"></div>
+</div>
+<script>
+    
+    $(document).ready(function(){
+        $('#cancel').click(function(p) {
+            p.preventDefault();
+            window.location.href = '/shop/cart'
+        })
+        $("#confirm").click(function(e){
+            e.preventDefault();
+            var formData = $("#clean-form").serialize();
+            $("#loading-overlay").fadeIn();
+            $.ajax({
+                type: 'POST',
+                url: '/shop/clean-cart-ajax/',
+                dataType: 'json',
+                data: formData,
+                success: function(response){
+                    $("#loading-overlay").fadeOut();
+                    console.log(response);
+                    window.location.href = '/shop/cart'
+                    
+                },
+                error: function(error){
+                    $("#loading-overlay").fadeOut();
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}

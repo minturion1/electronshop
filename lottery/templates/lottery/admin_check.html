@@ -1,0 +1,69 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block title %}Admin promo{% endblock %}
+{% block content %}
+<form id="form" method="post">
+    {% csrf_token %}
+    {{form}}
+    <button class="button" type="submit">Check</button>
+</form>
+{% if promocode == 'None' %}
+<div class="cart-item">
+    <div class="item-details">
+        <div class="cart-item-section">Promo code not found</div>
+    </div>
+</div>
+{% else %}
+{% if promocode %}
+
+<div class="cart-item">
+    <div class="item-details">
+        <div class="cart-item-section">{{ promocode.code}}</div>
+        
+        <div class="cart-detail">Reward: {{promocode.gift}}</div>
+        <div class="cart-detail">Type: {{promocode.type}}</div>
+        {% if my_promocode %}
+        <div class="cart-detail">Customer: {{ my_promocode.customer.user.username }}</div>
+        <div class="cart-detail">Time of use: {{ my_promocode.time|date:"H:i d.m.Y" }}</div>
+        {% if promocode.active %}
+        <div style="color: green; margin-top: 10px;" class="cart-item-section">Payment Permitted</div>
+        <form id="order-form" class="buttons">
+            {% csrf_token %}
+            <button id="confirm" class="button">Payment made <i class="fa-solid fa-check"></i></button>
+        </form>
+        {% else %}
+        <div style="color: red; margin-top: 10px;" class="cart-item-section">Payment prohibited (Payment Received)</div>
+        {% endif %}
+        {% else %}
+        <div style="color: red; margin-top: 10px;" class="cart-item-section">Payment prohibited (promo code not entered)</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+<script>
+    $(document).ready(function(){
+        $("#confirm").click(function(e){
+            e.preventDefault();
+            var formData = $("#clean-form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: `/lottery/admin-check-success-ajax/{{ promocode.id }}/`,
+                dataType: 'json',
+                data: formData,
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                },
+                success: function(response){
+                    console.log(response);
+                    window.location.href = '/lottery/admin-check/'
+                },
+                error: function(error){
+                    console.log(error);
+                    window.location.href = '/lottery/admin-check/'
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

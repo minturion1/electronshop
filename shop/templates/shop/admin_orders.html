@@ -1,0 +1,40 @@
+
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block content %}
+<div class="cart-container">
+    {% if orders %}
+    <div class="cart-section">Orders</div>
+    
+    <div class="cart-items">
+        {% for order in orders %}
+        
+        <a href="{% url 'admin_order_detail' order_id=order.id  %}" class="cart-item" >
+            <div class="item-details">
+                <div style="margin-top: 10px;" class="cart-item-section">Order №{{ order.id }}</div>
+                <div class="order-customer">{{ order.customer.user.first_name }} ({{ order.customer.user.username }})</div>
+                <div class="order-time">{{ order.created|date:"H:i d.m.Y" }}</div>
+            </div>
+            
+        </a>
+        
+        {% endfor %}
+        
+    </div>
+    
+
+    
+    {% else %}
+    <div class="cart-section">No orders</div>
+    {% endif %}
+</div>
+<script>
+    $(document).ready(function(){
+        $('.remove-button').click(function(e) {
+            e.preventDefault();
+            var orderId = $(this).data("order-id");
+            window.location.href = `/shop/delete-order/${orderId}`;
+        });
+    });
+</script>
+{% endblock %}

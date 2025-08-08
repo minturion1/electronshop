@@ -1,0 +1,121 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+<div class="cart-container">
+
+    {% if cart %}
+    <div class="cart-top">
+        <div class="cart-section">Your cart</div>
+        <form action="{% url 'cart:cart_clear' %}" method="post">
+            <button type="submit" class="cart-clean">Clear cart</button>
+            {% csrf_token %}
+        </form>
+        
+    </div>
+    
+    
+    <div class="cart-items">
+        {% for item in cart %}
+        {% with product=item.product %}
+        
+        <div class="cart-item" id="block_{{cart_item.id}}">
+            <img src="{% if product.img %}{{ product.img.url }}
+            {% else %}{% static 'img/no_image.png' %}{% endif %}" alt='Product Image' class='product-image'>
+            <div class="item-details">
+                <div class="cart-item-section">{{ product.name }}</div>
+                <div class="cart-detail">Ціна: <span>{% if product.discount %}{{product.discount_price}}{% else %}{{ item.price }}{% endif %} {% if item.currency == '2' %}<i class="fa-solid fa-coins"></i>{% else %}${% endif %}</span></div>
+                <div class="cart-detail">Кількість: <span>{{ item.quantity }}</span></div>
+                <div class="cart-detail">Вартість: <span>{{ item.total_price }} {% if item.currency == '2' %}<i class="fa-solid fa-coins"></i>{% else %}${% endif %}</span></div>
+            </div>
+            <div class="cart-item-buttons">
+                <a style="text-decoration: none;" href="{% url 'product' product_slug=item.product.slug  %}"><i class="fa-regular fa-pen-to-square remove-button"></i></a>
+                {% csrf_token %}
+                <form action="{% url 'cart:cart_remove' product.id %}"
+                    method="post">
+                    <button class="removeCartItem" type="submit" style="background-color: white; border:none;"><i class="fa-solid fa-trash-can remove-button"></i></button>
+                    {% csrf_token %}
+                    </form>
+                </div>
+            
+        </div>
+        
+        {% endwith %}
+        {% endfor %}
+        
+        <div id="loading-overlay">
+            <div id="loading-spinner"></div>
+        </div>
+    </div>
+    
+
+    <div style="margin-bottom: 10px;" class="cart-summary">
+        <div class="cart-summary-text">
+            To be paid: 
+            {% if cart.get_total_price %}<span id="total-price">{{ cart.get_total_price }}$</span>{% endif %}
+            <br>
+            {% if cart.get_total_points %}<span id="total-price">{{ cart.get_total_points }} <i class="fa-solid fa-coins"></i></span>{% endif %}
+        </div>
+        
+        <form id="cart-form">
+            {% csrf_token %}
+            <div class="cart-form-input">
+            </div>
+            
+            <a {% if customer.points < cart.get_total_points %}{% else %}href="{% url 'order_create' %}"{% endif %} id="create-order" class="button create-order-button">Create order</a>
+        </form>
+        <div id="loading-overlay">
+            <div id="loading-spinner"></div>
+        </div>
+        
+
+        
+    </div>
+    {% else %}
+    <div class="cart-section">Car is empty</div>
+    {% endif %}
+    <a href="{% url 'my_orders' %}" class="link">My orders</a>
+</div>
+
+<script>
+
+    $(document).ready(function() {
+        $('.remove-button').click(function() {
+            var cartId = $(this).data('cart-id');
+            var cartSum = $(this).data('cart-sum');
+            var cartCount = $(this).data('cart-count');
+            var csrfToken = $('[name=csrfmiddlewaretoken]').val();
+            var totalCount = document.getElementById('total-count')
+            var totalPrice = document.getElementById('total-price')
+            var resCount = totalCount.innerHTML - cartCount
+            var resPrice = totalPrice.innerHTML - cartSum
+            $("#loading-overlay").fadeIn();
+            $.ajax({
+                url: `/shop/delete-cart-ajax/${cartId}/`,
+                type: 'POST',
+                data: { csrfmiddlewaretoken: csrfToken },
+                success: function(response) {
+                    $("#loading-overlay").fadeOut();
+                    $(`#block_${cartId}`).addClass('hide');
+                    setTimeout(function() {
+                            $(`#block_${cartId}`).remove();
+                            $('#total-count').text(resCount)
+                            $('#total-price').text(resPrice)
+                        }, 500);
+                        if (resCount==0) {
+                            $('.cart-clean').remove()
+                            $('.cart-summary').remove()
+                            $('.cart-section').text('Кошик порожній')
+                        }
+
+                },
+                error: function(error) {
+                    $("#loading-overlay").fadeOut();
+                    console.error('Error:', error);
+                }
+            });
+        });
+        
+    });
+</script>
+{% endblock %}

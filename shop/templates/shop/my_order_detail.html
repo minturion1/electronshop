@@ -1,0 +1,74 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Order №{{ order.id }}{% endblock %}
+{% block content %}
+<div class="cart-container">
+    {% if order_items %}
+    <div class="cart-top">
+        <div class="cart-section">Order №{{ order.id }}</div>
+        {% if old_order %}{% else %}<a href="{% url 'delete_order' order_id=order.id %}" class="cart-clean">{% if order.old == False %}Cancel order{% else %}Delete order{% endif %}</a>{% endif %}
+    </div>
+    
+    
+    <div class="cart-items">
+        {% for order_item in order_items %}
+        
+        <div class="cart-item" id="block_{{cart_item.id}}">
+            <img src="{{ order_item.product.img.url }}" alt="Product Image" class="product-image">
+            <div class="item-details">
+                <div class="cart-item-section">{{ order_item.product.name}}</div>
+                <div class="cart-detail">Price: {% if order_item.currency == 1 %}<span>{% if order_item.product.discount %}{{ order_item.product.discount_price }}{% else %}{{ order_item.product.price }}{% endif %} ${% else %}<span>{{ order_item.product.get_points }} <i class="fa-solid fa-coins"></i></span> {% endif %}</span></div>
+                <div class="cart-detail">Count: <span class="total-count">{{order_item.quantity}}</span></div>
+                <div class="cart-detail">Cost: <span class="total-cost">{{ order_item.get_cost }} {% if order_item.currency == 1 %}${% else %}<i class="fa-solid fa-coins"></i>{% endif %}</span></div>
+            </div>
+            
+        </div>
+        
+        {% endfor %}
+        
+    </div>
+    
+
+    <div style="margin-bottom: 10px;" class="cart-summary">
+        <div class="cart-summary-content">
+            <div class="cart-summary-text">Total products: <span id="total-count">{{ total_count }}</span></div>
+            <div class="cart-summary-text">
+                {% if order.old == False %}To be paid: {% else %}Paid:{% endif %}
+                {% if order.get_total_cost %}{{ order.get_total_cost }} ${% endif %}
+                <br>
+                {% if order.get_total_points %}{{ order.get_total_points }} <i class="fa-solid fa-coins"></i>{% endif %}
+            
+            </div>
+        </div>
+        
+        
+        <div style="text-align: center;" class="message"></div>
+        
+    </div>
+    {% else %}
+    <div class="cart-section">Order №{{ order.id }} is empty</div>
+    {% endif %}
+
+    
+    <a href="{% url 'my_orders' %}" class="link">My orders</a>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        totalCount = 0;
+        totalSum = 0;
+        $('.total-count').each(function() {
+            var totalC = parseFloat($(this).text()) || 0;
+            totalCount += totalC;
+        })
+        $('.total-cost').each(function() {
+            var totalPrice = parseFloat($(this).text()) || 0;
+            totalSum += totalPrice;
+        })
+        $("#total-count").text(totalCount);
+        $("#total-price").text(totalSum);
+    })
+</script>
+
+{% endblock %}

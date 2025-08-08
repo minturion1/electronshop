@@ -1,0 +1,19 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{promocode.code}}{% endblock %}
+{% block content %}
+<div class="cart-container">
+    <a href="{% url 'lottery' %}" class="link">My promo codes</a>
+
+    {% if promocode %}
+    <div class="tx-2">{{ promocode.code }}</div>
+    <div style="background-image: {% if defeat %}none{% else %}{% if promocode.type == 'R' %}url('{% static 'img/red-gift.png' %}'){% endif %} {% if promocode.type == 'Y' %}url('{% static 'img/yellow-gift.png' %}'){% endif %} {% if promocode.type == 'G' %}url('{% static 'img/green-gift.png' %}'){% endif %};{% endif %}" class="gift">
+        <div {% if defeat %}{% else %}{% if promocode.type == 'R' %}style='color:white;'{% endif %}{% endif %} class="gift-text">{% if defeat %}Empty!{% else %}<b>{{ promocode.gift }}</b>{% endif %}</div>
+    </div>
+    <div class="cart-section">{% if promocode.empty %}Unfortunately, it's empty here.{% else %}Congratulations! You have won {{ promocode.gift }}{% endif %}</div>
+    <div class="cart-par">{% if promocode.empty %}Better luck next time!{% else %}{% if promocode.active %}To receive your reward, please contact our support.{% else %}You have already received your reward{% endif %}{% endif %}</div>
+    {% else %}
+    <div class="cart-section">Something went wrong...</div>
+    {% endif %}
+</div>
+{% endblock %}

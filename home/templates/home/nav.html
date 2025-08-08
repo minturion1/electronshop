@@ -1,0 +1,74 @@
+{% load i18n %}
+{% load static %}
+
+<header>
+    <div class="nav-left">
+        <a href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" class="logo"></a>
+    </div>
+    
+    <nav class="navbar">
+        <ul class="nav_links">
+            <li><a href="{% url 'categories' %}">Categories</a></li>
+            <li><a href="{% url 'full_assortment' %}">All products</a></li>
+            {% if request.user.is_authenticated %}<li><a href="{% url 'my_orders' %}">My orders</a></li>{% endif %}
+            {% if request.user.is_authenticated %}<li><a href="{% url 'lottery' %}">Lottery</a></li>{% endif %}
+            {% if request.user.is_staff %}
+            <li><a href="{% url 'admin_orders' %}">Offers for staff</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+        <div class="nav-right">
+            <a href="{% url 'profile' %}" class="button profile-button">{% if request.user.is_authenticated %}Profile{% else %}Login{% endif %}</a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'cart:cart_detail' %}"><i class="cart fa-solid fa-cart-shopping" style="position: relative;">{% if cart %} <span style="color: white; font-family: 'Courier New', Courier, monospace; background-color: red; border-radius: 100px; padding: 2px 5px; font-size: 13px; position: absolute; top: 20px; right: 0px;" >{{ cart|length }}</span>{% else %}{% endif %} </i>
+            
+            </a>
+            <a href="{% url 'profile' %}"><i class="profile__icon cart fa-solid fa-user"></i></a>
+            {% if customer_info %}<div class="coins comp-coins"><div class="coins-count">{{ customer_info.points }}</div><i class="fa-solid fa-coins"></i></div>{% endif %}
+          
+            {% endif %}
+            {% if not request.user.is_authenticated %}<a href="{% url 'login' %}" class="link mobile-login">Login</a>{% endif %}
+            <nav class="mobile-nav" role="navigation">
+                <div {% if not request.user.is_authenticated %} style='top:15px;' {% endif %} id="menuToggle">
+                  <input id="bar__checkbox" type="checkbox" />
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                <ul id="mobile-menu">
+                  <div class="mobile-top">
+                    {% if customer_info %}<div class="coins"><div class="coins-count">{{ customer_info.points }}</div><i class="fa-solid fa-coins"></i></div>{% endif %}
+                  </div>
+                  
+                    <a href="{% url 'categories' %}">Categories</a>
+                    <a href="{% url 'full_assortment' %}">All products</a>
+                    {% if request.user.is_authenticated %}<a href="{% url 'my_orders' %}">My offers</a>{% endif %}
+                    {% if request.user.is_authenticated %}<a href="{% url 'lottery' %}">Lottery</a>{% endif %}
+                    {% if request.user.is_staff %}
+                      <a href="{% url 'admin_orders' %}">Offers for staff</a>
+                    {% endif %}
+                    {% if request.user.is_authenticated %}<a href="{% url 'referal_list' %}">My friends</a>{% endif %}
+                </ul>
+               </div>
+              </nav>
+        </div>
+        
+</header>
+<script>
+    $(document).ready(function(){
+      var checkbox = document.getElementById('bar__checkbox');
+
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          $('#mobile-menu').css('display','block')
+          $('#mobile-menu').css('width','100%')
+          $('body').css('overflow','hidden')
+        } else {
+          $('body').css('overflow-y','scroll')
+          $('#mobile-menu').css('width','0vw')
+          setTimeout(function() {
+            $('#mobile-menu').css('display','none')
+          }, 250);
+        }
+      });
+    });
+</script>

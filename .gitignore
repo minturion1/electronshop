@@ -1,0 +1,10 @@
+.env
+*.key
+*.pem
+*.crt
+node_modules/
+build/
+.idea/
+.vscode/
+secrets/
+.venv

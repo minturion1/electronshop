@@ -1,0 +1,21 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{ category.title }}{% endblock %}
+{% block content %}
+    <div class="way">
+        <a href="{% url 'home' %}" class="way__link">Home</a><span class="way__line">/</span><a href="{% url 'categories' %}" class="way__link">Categories</a><span class="way__line">/</span><div class="way__checked">{{ category.title|truncatechars:20 }}</div>
+    </div>
+    <a href="{% url 'home' %}" class="way__link mobile-back"><i class="fa-solid fa-angle-left"></i> Back</a>
+    <section id="menu">
+        <h1 class="tx-2">{{ category.title }}</h1>
+        <div class="container">
+            {% for subcategory in subcategories %}
+            <a href="{% url 'products' cat_slug=category.slug subcat_slug=subcategory.slug %}" class="cat-card">
+                <img class="cat-card-img" src="{{ subcategory.img.url }}" alt="{{ subcategory.title }}">
+                <div class="cat-card-title">{{ subcategory.title }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

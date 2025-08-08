@@ -1,0 +1,41 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Delete order №{{ order.id }}{% endblock %}
+{% block content %}
+<div class="cart-container">
+    <div class="cart-section">{% if order.old %}Delete order №{{ order.id }}{% else %}cancel order №{{ order.id }}{% endif %}</div>
+    <div class="cart-par">You are {% if order.old %}deleting{% else %}canceling{% endif %} ther order. Are you sure?</div>
+    <form id="clean-form" class="buttons">
+        {% csrf_token %}
+        <button class="button" id="cancel">Back</button>
+        <button class="button" id="confirm">Confirm</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#cancel').click(function(p) {
+            p.preventDefault();
+            window.location.href = '/shop/my-orders/'
+        })
+        $("#confirm").click(function(e){
+            e.preventDefault();
+            var formData = $("#clean-form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: `/shop/delete-order-ajax/{{order.id}}/`,
+                dataType: 'json',
+                data: formData,
+                success: function(response){
+                    console.log(response);
+                    window.location.href = '/shop/my-orders/'
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}

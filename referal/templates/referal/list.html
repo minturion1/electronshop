@@ -1,0 +1,36 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}My friends{% endblock %}
+{% block content %}
+<div class="cart-container">
+    {% if my_friends %}
+    <div class="cont-top">
+        <div class="cart-section">Your friends</div>
+        <div class="notice">When your subordinate makes a purchase, you get 10% back in coins.</div>
+    </div>
+    
+    
+    <div class="cart-items">
+        {% for friend in my_friends %}
+        
+        <div class="cart-item" >
+            <div class="item-details">
+                <div style="margin-top: 10px;" class="cart-item-section">{% if friend.commandor == request.user %}{{friend.friend.first_name}} ({{friend.friend.username}}){% else %}{{friend.commandor.first_name}} ({{friend.commandor.username}}){% endif %}</div>
+                <div class="order-time">{{ friend.friend.date_joined|date:"H:i d.m.Y" }}</div>
+            </div>
+            <div class="friend_status">{% if friend.commandor == request.user %}Subordinate{% else %}Boss{% endif %}</div>
+            
+        </div>
+        
+        {% endfor %}
+        
+    </div>
+    
+
+    
+    {% else %}
+    <div class="cart-section">You have no friends &#128549</div>
+    <div class="cart-par">You can add a friend when they register. Share your invite code: <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ invite_code.code }}</span></div>
+    {% endif %}
+</div>
+{% endblock %}

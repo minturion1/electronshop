@@ -1,0 +1,38 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}My promo codes{% endblock %}
+{% block content %}
+<div class="cart-container">
+    {% if my_promocodes %}
+    <div class="cont-top">
+        <div class="cart-section">Your promo codes</div>
+        <a href="{% url 'add_promocode' %}" class="cart-clean">Enter promo code</a>
+    </div>
+    
+    
+    <div class="cart-items">
+        {% for my_promocode in my_promocodes %}
+        
+        <a href="{% url 'success_promo' code=my_promocode.promocode.code %}" class="cart-item" >
+            <div class="item-details">
+                <div style="margin-top: 10px;" class="cart-item-section">{{my_promocode.promocode.code}}</div>
+                <div class="order-time">{% if my_promocode.promocode.empty %}{% else %}{% if my_promocode.promocode.active %}No reward received{% else %}Reward received{% endif %}{% endif %}</div>
+            </div>
+            <div class="friend_status">{% if my_promocode.promocode.empty %}Empty{% else %}{{ my_promocode.promocode.gift }}{% endif %}</div>
+            
+        </a>
+        
+        {% endfor %}
+        
+    </div>
+    
+
+    
+    {% else %}
+    <div class="cart-top">
+        <div class="cart-section">You have no saved promo codes</div>
+        <a href="{% url 'add_promocode' %}" class="cart-clean">Enter promo code</a>
+    </div>  
+    {% endif %}
+</div>
+{% endblock %}

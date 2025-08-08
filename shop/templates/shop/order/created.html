@@ -1,0 +1,11 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Замовлення доставлено - Магазин ТВПУ 3{% endblock %}
+{% block content %}
+<div class="cart-container">
+    <div class="cart-section">Дякуємо</div>
+    <div class="cart-par">Ваше замовлення було надіслане. Ваш номер замовлення {{ order.id }}.<br>
+    Ми зв'яжемося з вами з наступними кроками.
+    </div>
+</div>
+{% endblock %}

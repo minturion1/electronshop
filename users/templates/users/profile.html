@@ -1,0 +1,47 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <div class="profile">
+        <div class="profile__content">
+            <div class="tx-2">Your profile</div>
+            <div class="profile__top">
+                <div class="profile__person">
+                    <div class="profile__name">{{request.user.first_name}}</div>
+                    <div class="profile__username">@{{request.user.username}}</div>
+                </div>
+                <div class="profile__referal">
+                    <a href="{% url 'referal_list' %}" class="profile__referal-link link">My friends</a>
+                    <div class="profile__referal-text">Share invite code:</div>
+                    <div class="profile__referal-code">{{ referal_code }}</div>
+                    
+                </div>
+            </div>
+            
+            <div class="profile__raiting">
+                {% if deadline %}
+                <img src="{% static 'img/question.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting <= 2000 %}
+                <img src="{% static 'img/bronze.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting <= 4000 %}
+                <img src="{% static 'img/silver.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting <= 6000 %}
+                <img src="{% static 'img/gold.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting <= 8000 %}
+                <img src="{% static 'img/platine.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting <= 10000 %}
+                <img src="{% static 'img/diamond.png' %}" class="profile__raiting-img"></img>
+                {% elif raiting >= 10000 %}
+                <img src="{% static 'img/best.png' %}" class="profile__raiting-img"></img>
+                {% else %}
+                <img src="{% static 'img/bronze.png' %}" class="profile__raiting-img"></img>
+                {% endif %}
+                <div class="profile__raiting-number">{% if deadline %}{{ deadline }} days{% else %}{{ raiting }}{% endif %}</div>
+                <div class="profile__raiting-number-par">{% if deadline %}To view the rating{% else %}Customer rating{% endif %}</div>
+            </div>
+            
+            
+            </div>
+        </div>
+    </div>
+{% endblock %}

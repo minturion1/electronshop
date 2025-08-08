@@ -1,0 +1,42 @@
+{% extends 'shop/base.html' %}
+{% block title %}Special offers{% endblock %}
+{% load static %}
+{% block content %}
+    <section id="menu">
+        <h1 class="tx-2">Special offers</h1>
+        <div class="container">
+            {% for product in products %}
+            <div class="card">
+                <a href="{% url 'product' product_slug=product.slug %}"><img class="card-image" src="{{ product.img.url }}"></a>
+
+                <a href="{% url 'product' product_slug=product.slug %}" class="card-section">{{ product.title }}</a>
+                <div class="card-bottom">
+                    {% if product.price %}<div class="card-price">{% if product.discount_price %}{{ product.discount_price }}{% else %}{{ product.price }}{% endif %} $</div>{% endif %}
+                    <a class="card-button" href="{% url 'product' product_slug=product.slug %}">Buy</a>
+                </div>
+                {% if product.discount %}<div class="card-discount">-{{ product.discount }}%</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="pagination">
+        <span class="step-links">
+          {% if products.has_previous %}
+            <a href="?page=1">&laquo;</a>
+            <a href="?page={{ products.previous_page_number }}">&lsaquo;</a>
+          {% endif %}
+      
+          {% if products.has_previous or products.has_next %}
+          <span class="current">
+            {{ products.number }} з {{ products.paginator.num_pages }}.
+          </span>
+          {% endif %}
+          {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}">&rsaquo;</a>
+            <a href="?page={{ products.paginator.num_pages }}">&raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+
+{% endblock %}

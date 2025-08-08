@@ -1,0 +1,94 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<form id="form">
+    {% csrf_token %}
+    {{ form.first_name.label }}
+    {{ form.first_name }}
+
+    {{ form.username.label }}
+    {{ form.username }}
+
+
+    {{ form.password1.label }}
+    <div class="input-container">
+        {{ form.password1 }}
+        <span class="icon"><i data-target="id_password1" class="fa-regular fa-eye toggle-password"></i></span>
+    </div>
+
+    {{ form.password2.label }}
+    <div class="input-container">
+        {{ form.password2 }}
+        <span class="icon"><i data-target="id_password2" class="fa-regular fa-eye toggle-password"></i></span>
+    </div>
+    {{ form.invite_code.label }}
+    {{ form.invite_code }}
+    <div class="message"></div>
+    
+    <div class="form__bottom">
+        <a class="register__button" href="{% url 'login' %}">Login</a>
+        <button type="button" id="login-btn" class="button">Register</button>
+    </div>
+    
+</form>
+<div id="loading-overlay">
+    <div id="loading-spinner"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const targetId = button.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                } else {
+                    passwordInput.type = 'password';
+                }
+            });
+        });
+    });
+
+
+
+    $(document).ready(function(){
+        $("#login-btn").click(function(){
+            event.preventDefault();
+            $("#loading-overlay").fadeIn();
+            var formData = $("#form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: '/profile/register-ajax/',
+                data: formData,
+                success: function(response){
+                    console.log('success');
+                    $('.message').css('display', 'block')
+                    $('.message').text(response.message).css('color','green');
+                    if (response.url) {
+                        window.location.href = response.url;
+                    }
+                    $("#loading-overlay").fadeOut();
+                },
+                error: function(response){
+                    console.log(response);
+                    $('.message').css('display', 'block')
+                    $('.message').text(response.responseJSON.message).css('color', 'purple');
+                    if (response.responseJSON.errors) {
+                        console.error(response.responseJSON.errors);
+                        $.each(response.responseJSON.errors, function(field, error){
+                            $('#' + field + '-error').text(error[0]).css('color', 'red');
+                        });
+                    }
+                    $("#loading-overlay").fadeOut();
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

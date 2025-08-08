@@ -1,0 +1,33 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Оформити замовлення - Магазин ТВПУ 3{% endblock %}
+{% block content %}
+<div class="order-content">
+    <a href="#M1" class="inhref">Ваше замовлення <i class="fa-solid fa-angle-down"></i></a>
+    <form  method="post" id="form" class="order-form form">
+        {{ form.as_p }}
+        {% if cart %}<p><input style="margin: auto;" class="button" type="submit" value="Зробити замовлення"></p>{% else %} <div style="display: block; color: red;" class="message">Ваш кошик порожній</div> {% endif %}
+        {% csrf_token %}
+    </form>
+    {% if cart %}
+    <div id="M1" class="order-main">
+        <div class="order-section">Ваше замовлення </div>
+        <div class="order-list">
+            {% for item in cart %}
+                <div class="order-product">
+                    <span class="order-porduct-info">{{ item.quantity }}x {{ item.product.name }}</span>
+                    <span class="order-product-price">{{ item.total_price }} {% if item.currency == '2' %}<i class="fa-solid fa-coins"></i>{% else %}грн{% endif %}</i></span>
+                </div>
+                
+            {% endfor %}
+        </div>
+        {% if cart %}<div class="order-total">
+            Всього: 
+            {% if cart.get_total_price %}{{ cart.get_total_price }} грн{% endif %}
+            <br>
+            {% if cart.get_total_points %}{{ cart.get_total_points }} <i class="fa-solid fa-coins"></i>{% endif %}
+        </div>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

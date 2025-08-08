@@ -1,0 +1,74 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}My orders{% endblock %}
+{% block content %}
+<div class="cart-container">
+    {% if my_orders %}
+    <div class="cart-section">Active orders</div>
+    
+    <div class="cart-items">
+        {% for order in my_orders %}
+        
+        <a href="{% url 'my_order_detail' order_id=order.id  %}" class="cart-item" >
+            <div class="item-details">
+                <div style="margin-top: 10px;" class="cart-item-section">Order №{{ order.id }}</div>
+                <div class="order-time">{{ order.time|date:"H:i d.m.Y" }}</div>
+            </div>
+            
+        </a>
+        
+        {% endfor %}
+        
+    </div>
+    
+
+    
+    {% else %}
+    <div class="cart-section">No active orders</div>
+    {% endif %}
+    {% if my_old_orders %}
+        <div class="cart-section">Orders archive</div>
+        <div class="cart-items">
+            {% for order in my_old_orders %}
+            
+            <a id="block_{{order.id}}" href="{% url 'my_order_detail' order_id=order.id  %}" class="cart-item" >
+                <div class="item-details">
+                    <div style="margin-top: 10px;" class="cart-item-section">Order №{{ order.id }}</div>
+                    <div class="order-time">{{ order.created|date:"H:i d.m.Y" }}</div>
+                </div>
+                
+            </a>
+            
+            {% endfor %}
+            
+        </div>
+    {% endif %}
+</div>
+<script>
+    $(document).ready(function() {
+        $('.delete-check').click(function(e) {
+            e.preventDefault()
+            var orderId = $(this).data('old-order-id');
+            var csrfToken = $('[name=csrfmiddlewaretoken]').val();
+
+            
+            $.ajax({
+                url: `/shop/delete-old-order-ajax/${orderId}/`,
+                type: 'POST',
+                data: { csrfmiddlewaretoken: csrfToken },
+                success: function(response) {
+                    $(`#block_${orderId}`).addClass('hide');
+                    setTimeout(function() {
+                            $(`#block_${orderId}`).remove();
+                        }, 500);
+
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}

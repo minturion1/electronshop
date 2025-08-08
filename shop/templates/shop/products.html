@@ -1,0 +1,27 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{ subcategory.title }}{% endblock %}
+{% block content %}
+    <div class="way">
+        <a href="{% url 'home' %}" class="way__link">Home</a><span class="way__line">/</span><a href="{% url 'categories' %}" class="way__link">Categories</a><span class="way__line">/</span><a href="{% url 'subcategories' cat_slug=subcategory.category.slug %}" class="way__link">{{ subcategory.category.title|truncatechars:20 }}</a><span class="way__line">/</span><div class="way__checked">{{ subcategory.title|truncatechars:20 }}</div>
+    </div>
+    <a href="{{category.get_absolute_url}}" class="way__link mobile-back"><i class="fa-solid fa-angle-left"></i> Back</a>
+    <section id="menu">
+        <h1 class="tx-2">{{ subcategory.title }}</h1>
+        <div class="container">
+            {% for product in products %}
+            <div class="card">
+                <a href="{% url 'product' product_slug=product.slug %}"><img class="card-image" src="{{ product.img.url }}"></a>
+
+                <a href="{% url 'product' product_slug=product.slug %}" class="card-section">{{ product.name }}</a>
+                <div class="card-bottom">
+                    {% if product.price %}<div class="card-price">{% if product.discount %}{{ product.discount_price }}{% else %}{{ product.price }}{% endif %} грн</div>{% endif %}
+                    <a class="card-button" href="{% url 'product' product_slug=product.slug %}">Buy</a>
+                </div>
+                {% if product.discount %}<div class="card-discount">-{{ product.discount }}%</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

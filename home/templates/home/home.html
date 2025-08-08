@@ -1,0 +1,74 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/255f44275c.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="icon" type="image/png" href="{% static '/img/logo.png' %}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6431018807348092"
+     crossorigin="anonymous"></script>
+    <title>Home - ElectronStore</title>
+</head>
+
+{% include 'home/nav.html' %}
+<body>
+        <section id="menu">
+            <h1 class="tx-2">Categories</h1>
+            <div class="container">
+                {% for category in categories %}
+                <a href="{% url 'subcategories' cat_slug=category.slug %}" class="cat-card">
+                    <img class="cat-card-img" src="{{ category.img.url }}" alt="{{ category.title }}">
+                    <div class="cat-card-title">{{ category.title }}</div>
+                </a>
+                {% endfor %}
+            </div>
+            {% if actions %}
+            <h1 class="tx-2">{% blocktrans %}Special Offers{% endblocktrans %}</h1>
+            <div class="container">
+                {% for product in actions %}
+                    <div class="card">
+                        <a href="{% url 'product' product_slug=product.slug %}"><img class="card-image" src="{{ product.img.url }}"></a>
+
+                        <a href="{% url 'product' product_slug=product.slug %}" class="card-section">{{ product.name }}</a>
+                        <div class="card-bottom">
+                            {% if product.price %}<div class="card-price">{% if product.discount_price %}{{ product.discount_price }}{% else %}{{ product.price }}{% endif %}$</div>{% endif %}
+                            <a class="card-button" href="{% url 'product' product_slug=product.slug %}">Buy</a>
+                        </div>
+                        {% if product.discount %}<div class="card-discount">-{{ product.discount }}%</div>{% endif %}
+                    </div>
+                    {% endfor %}
+            </div>
+            <a href="{% url 'actions' %}" class="button detail-button">View all</a>
+            {% endif %}
+            {% if promocodes %}
+            <h1 class="tx-2">Promo codes</h1>
+            <div class="container">
+                {% for product in promocodes %}
+                    <div class="card">
+                        <a href="{% url 'product' product_slug=product.slug %}"><img class="card-image" src="{{ product.img.url }}"></a>
+
+                        <a href="{% url 'product' product_slug=product.slug %}" class="card-section">{{ product.name }}</a>
+                        <div class="card-bottom">
+                            {% if product.price %}<div class="card-price">{{ product.price }}$</div>{% endif %}
+                            <a class="card-button" href="{% url 'product' product_slug=product.slug %}">Buy</a>
+                        </div>
+                        {% if product.discount %}<div class="card-discount">-{{ product.discount }}%</div>{% endif %}
+                    </div>
+                    {% endfor %}
+            </div>
+            <a href="{% url 'actions' %}" class="button detail-button">View all</a>
+            {% endif %}
+        </section>
+        
+
+
+        {% include 'home/footer.html' %}
+</body>
+</html>

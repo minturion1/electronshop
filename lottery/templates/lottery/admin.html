@@ -1,0 +1,12 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block title %}Admin Promo{% endblock %}
+{% block content %}
+
+<form id="form" method="post">
+    <a style="float: right;" href="{% url 'admin_check' %}" class="link">Check promo code</a>
+    {% csrf_token %}
+    {{form}}
+    <button class="button" type="submit">Create</button>
+</form>
+{% endblock %}

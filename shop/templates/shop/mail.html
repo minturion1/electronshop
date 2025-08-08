@@ -1,0 +1,8 @@
+{% autoescape off %}>
+{% load static %}
+Order № {{ order.id }} from user {{order.customer.user.first_name}} ({{order.customer.user.username}}) <br>
+Order location: {{ order.location }} <br>
+Order creation: {{ order.time|date:"H:i d.m.Y" }}
+Contacts: {{ order.contact }}
+Additional request: {{ order.note }}
+{% endautoescape %}

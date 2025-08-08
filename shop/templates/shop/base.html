@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/255f44275c.js" crossorigin="anonymous"></script>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="icon" type="image/png" href="{% static '/img/logo.png' %}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6431018807348092"
+     crossorigin="anonymous"></script>
+    <title>{% block title %}{% endblock %} - ElectronStore</title>
+</head>
+
+{% include 'home/nav.html' %}
+
+<body>
+    
+
+    {% block content %}
+    {% endblock %}
+
+        {% include 'home/footer.html' %}
+        
+</body>
+</html>
